@@ -95,13 +95,13 @@
 
   body {
     @apply bg-background text-foreground;
-    font-feature-settings:
-      "rlig" 1,
-      "calt" 1;
+    font-feature-settings: "rlig" 1, "calt" 1;
   }
 
   /* Reset CSS */
-  *, *::before, *::after {
+  *,
+  *::before,
+  *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
@@ -109,20 +109,20 @@
 
   /* Estilos globales */
   @font-face {
-    font-family: 'OlivieSans-Regular';
-    src: url('/assets/fonts/OlivieSans-Regular.ttf') format('truetype');
+    font-family: "OlivieSans-Regular";
+    src: url("/assets/fonts/OlivieSans-Regular.ttf") format("truetype");
     font-weight: normal;
     font-style: normal;
   }
 
   a {
-    color: #455CE9;
+    color: #455ce9;
     text-decoration: none;
     transition: color 0.3s ease;
   }
 
   a:hover {
-    color: #1E1EFF;
+    color: #1e1eff;
   }
 
   /* Scrollbar personalizado */
@@ -147,4 +147,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
+}
+html {
+  scroll-snap-type: y mandatory;
+}
+section[data-parallax] {
+  scroll-snap-align: start;
 }

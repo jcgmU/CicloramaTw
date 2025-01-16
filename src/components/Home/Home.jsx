@@ -5,6 +5,7 @@ import { cn } from "@/lib/utils";
 import Marquee from "@/components/ui/marquee";
 import WordRotate from "@/components/ui/word-rotate";
 import TextReveal from "@/components/ui/text-reveal";
+import Footer from "../Footer/Footer";
 
 const logos = [
   { src: "src/assets/images/Mazda.svg", alt: "Mazda" },
@@ -51,14 +52,14 @@ const Home = () => {
     <div className="w-full relative">
       {/* Sección 1: Logo */}
       <section className="h-screen grid place-items-center">
-        <div className="max-w-[1350px] mx-auto">
+        <div className="max-w-[1500px] mx-auto">
           <img src={Logo} alt="Ciclorama Logo" className="w-[300px]" />
         </div>
       </section>
 
       {/* Sección 2: Información */}
       <section className="min-h-screen bg-light text-dark flex items-center py-12">
-        <div className="max-w-[1350px] mx-auto px-12 grid grid-cols-1 md:grid-cols-[3fr,1fr] gap-8 items-center w-full">
+        <div className="max-w-[1500px] mx-auto px-12 grid grid-cols-1 md:grid-cols-[3fr,1fr] gap-8 items-center w-full">
           {/* Div que contiene el h1 y el p */}
           <div className="md:col-span-1 w-full">
             <TextReveal
@@ -71,7 +72,7 @@ const Home = () => {
 
       {/* Sección 3: Proyectos */}
       <section className="min-h-screen flex items-center bg-[#212121] text-[#e8e8e8] py-12">
-        <div className="max-w-[1350px] mx-auto px-12 grid grid-cols-1 gap-8 w-full">
+        <div className="max-w-[1500px] mx-auto px-12 grid grid-cols-1 gap-8 w-full">
           <h2 className="text-7xl my-8 text-left">Últimos Proyectos</h2>
 
           {[
@@ -152,7 +153,7 @@ const Home = () => {
 
       {/* Sección 5: Contacto */}
       <section className="min-h-screen grid place-items-center py-12 bg-[#212121]">
-        <div className="max-w-[1350px] mx-auto grid grid-cols-5 grid-rows-5 gap-4 p-12 mg top-5">
+        <div className="max-w-[1500px] mx-auto grid grid-cols-5 grid-rows-5 gap-4 p-12 mg top-5">
           {/* Título */}
           <div className="col-span-3 row-span-2 row-start-2">
             <h1 className="text-[80px] text-light text-left">
@@ -179,17 +180,7 @@ const Home = () => {
         </div>
       </section>
 
-      <footer className="bg-[#212121] text-[#888888] py-8">
-        <div className="max-w-[1350px] mx-auto grid grid-cols-1 md:grid-cols-2 gap-8 items-center w-full">
-          <img src={Logo} alt="Ciclorama Logo" className="w-[100px]" />
-
-          {/* Contenedor adicional para centrar el texto */}
-
-          <p className="text-sm text-right">
-            © 2024 Ciclorama. Todos los derechos reservados.
-          </p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 };
