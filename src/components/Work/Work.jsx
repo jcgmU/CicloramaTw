@@ -1,58 +1,20 @@
 // src/components/Work/Work.jsx
+
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import { animate, scroll } from "motion";
+import {
+  Carousel,
+  Dialog,
+  DialogHeader,
+  DialogBody,
+  DialogFooter,
+  Typography,
+} from "@material-tailwind/react";
 import BoxReveal from "@/components/ui/box-reveal";
-import ProjectCard from "./ProjectCard";
 import Footer from "../Footer/Footer";
 
-function chunkArray(arr, size) {
-  const result = [];
-  for (let i = 0; i < arr.length; i += size) {
-    result.push(arr.slice(i, i + size));
-  }
-  return result;
-}
-
-function ProjectRow({ projects }) {
-  const [selectedProject, setSelectedProject] = useState(null);
-
-  const handleClick = (project) => {
-    setSelectedProject(project);
-  };
-
-  return (
-    <div className="mb-12 w-full">
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 w-full">
-        {projects.map((project) => (
-          <ProjectCard
-            key={project.id}
-            project={project}
-            onClick={() => handleClick(project)}
-          />
-        ))}
-      </div>
-
-      {selectedProject && (
-        <div
-          key={`${selectedProject.id}-${Date.now()}`}
-          className="mt-12 w-full text-left"
-        >
-          <BoxReveal boxColor="#1400c6" duration={0.6}>
-            <h2 className="text-5xl text-[#212121]">{selectedProject.title}</h2>
-          </BoxReveal>
-          <BoxReveal boxColor="#1400c6" duration={0.5}>
-            <p className="text-2xl text-[#212121] mt-6">
-              {selectedProject.details}
-            </p>
-          </BoxReveal>
-        </div>
-      )}
-    </div>
-  );
-}
-
-// Variants
+// Variants para Framer Motion
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
   visible: {
@@ -72,15 +34,12 @@ const itemVariants = {
   visible: {
     opacity: 1,
     x: 0,
-    transition: {
-      duration: 0.4,
-      ease: "easeOut",
-    },
+    transition: { duration: 0.4, ease: "easeOut" },
   },
 };
 
 const Work = () => {
-  // Data
+  // === Data de proyectos (7) ===
   const projectsData = [
     {
       id: 1,
@@ -96,7 +55,7 @@ const Work = () => {
       title: "Coffe Fest",
       thumbnail: "/assets/images/imgProjects/CoffeeFest.webp",
       description:
-        "festival busca conectar a caficultores con apasionados por el mundo del café. La cuarta edición del festival más importante de la bebida tradici...",
+        "Festival busca conectar a caficultores con apasionados por el mundo del café. La cuarta edición del festival más importante de la bebida tradicional.",
       details:
         "Lorem ipsum, dolor sit amet consectetur adipisicing elit. Nobis rerum culpa ullam praesentium",
     },
@@ -104,7 +63,8 @@ const Work = () => {
       id: 3,
       title: "El Papa de los Asados",
       thumbnail: "/assets/images/imgProjects/papaDeLosAsados.png",
-      description: "Lorem ipsum...",
+      description:
+        "Propuesta gastronómica que se enfoca en los asados más auténticos y deliciosos de la región.",
       details:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis rerum culpa ullam praesentium",
     },
@@ -113,47 +73,57 @@ const Work = () => {
       title: "Cafés de Colombia Expo",
       thumbnail: "/assets/images/imgProjects/CafesColombiaExpo.jpg",
       description:
-        "Cafés de Colombia Expo es la feria de cafés especiales más importante...",
+        "Cafés de Colombia Expo es la feria de cafés especiales más importante de nuestro país y de América Latina.",
       details:
-        "Cafés de Colombia Expo es la feria de cafés especiales más importante de nuestro país y de América Latina. Es el evento que integra toda la cadena de valor del café y ofrece un escenario para exponer ",
+        "Es el evento que integra toda la cadena de valor del café y ofrece un escenario para exponer.",
     },
     {
       id: 5,
       title: "Expo 2 Ruedas",
       thumbnail: "/assets/images/imgProjects/Expo2Ruedas.jpg",
       description:
-        "Expo 2 Ruedas llega a la capital del país para dinamizar la industria de las motocicletas y la...",
+        "Expo 2 Ruedas llega a la capital para dinamizar la industria de las motocicletas y la movilidad alternativa.",
       details:
-        "Expo 2 Ruedas llega a la capital del país para dinamizar la industria de las motocicletas y la movilidad alternativa, el escenario que reúne a los amantes y apasionados de las 2 ruedas, con las marcas más importantes del mercado, ",
+        "El escenario que reúne a los amantes y apasionados de las 2 ruedas, con las marcas más importantes del mercado.",
     },
     {
       id: 6,
       title: "FILBo",
       thumbnail: "/assets/images/imgProjects/Filbo.jpg",
       description:
-        "La Feria Internacional del Libro de Bogotá es el escenario natural para que los actores",
+        "La Feria Internacional del Libro de Bogotá es el escenario natural para que los actores de la cadena den a conocer sus novedades.",
       details:
-        "La Feria Internacional del Libro de Bogotá es el escenario natural para que los actores de la cadena den a conocer sus novedades a sus lectores, acercándolos a través de la programación cultural, ",
+        "Acercando a los lectores a través de la programación cultural, con actividades e invitados especiales.",
     },
     {
       id: 7,
       title: "Salon Internacional Del Automovil",
       thumbnail: "/assets/images/imgProjects/SalonAutomovil.jpg",
       description:
-        "La feria es el espacio ideal para el sector automotor de Colombia, donde asisten interesados en la adquisición de autos, motos, SUV vehículos utilitarios y de carga ligera, entre otros.",
+        "La feria es el espacio ideal para el sector automotor de Colombia, con autos, motos, SUV y mucho más.",
       details:
-        "La feria es el espacio ideal para el sector automotor de Colombia, donde asisten interesados en la adquisición de autos, motos, SUV vehículos utilitarios y de carga ligera, entre otros. ",
+        "Asisten interesados en la adquisición de vehículos, con las marcas más importantes y las últimas tendencias del sector.",
     },
   ];
 
-  const chunkedProjects = chunkArray(projectsData, 3);
+  // === Estado para Modal ===
+  const [open, setOpen] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
-  // Parallax + progress
+  // Abre/Cierra el modal
+  const handleOpen = (project) => {
+    if (project) setSelectedProject(project);
+    setOpen((prev) => !prev);
+  };
+
+  // === Efecto de Parallax + Progreso ===
   useEffect(() => {
+    // Barra de progreso
     scroll(
       animate(".progress-bar-work", { scaleX: [0, 1] }, { ease: "linear" })
     );
 
+    // Parallax
     document.querySelectorAll("[data-parallax-work]").forEach((el) => {
       scroll(animate(el, { y: [-60, 60] }, { ease: "linear" }), {
         target: el,
@@ -163,7 +133,7 @@ const Work = () => {
 
   return (
     <div>
-      {/* Sección oscura superior */}
+      {/* Sección 1: Hero oscuro */}
       <motion.section
         className="h-screen bg-[#212121] flex flex-col justify-center items-center px-4"
         initial="hidden"
@@ -188,7 +158,7 @@ const Work = () => {
         </motion.p>
       </motion.section>
 
-      {/* Sección clara inferior */}
+      {/* Sección 2: Carrusel Claro */}
       <motion.section
         className="min-h-screen py-[100px] px-4 md:px-12 bg-[#e8e8e8]"
         initial="hidden"
@@ -197,28 +167,123 @@ const Work = () => {
         variants={containerVariants}
       >
         <div className="max-w-[1500px] w-full mx-auto">
-          {chunkedProjects.map((row, rowIndex) => (
-            <motion.div
-              key={rowIndex}
-              variants={itemVariants}
-              data-parallax-work
-              className="mb-10"
+          {/* Carrusel con thumbnails en la navegación */}
+          <motion.div variants={itemVariants} data-parallax-work>
+            <Carousel
+              className="rounded-xl"
+              navigation={({ setActiveIndex, activeIndex, length }) => (
+                <div className="absolute bottom-0 left-2/4 z-50 flex -translate-x-2/4 gap-2 pb-8">
+                  {new Array(length).fill("").map((_, i) => {
+                    // Thumbnail = la imagen del proyecto
+                    // en la posición i (si existe)
+                    const thumb = projectsData[i]
+                      ? projectsData[i].thumbnail
+                      : "/assets/images/default.jpg";
+
+                    return (
+                      <img
+                        key={`thumb-${i}`}
+                        src={thumb}
+                        alt={`thumb-${i}`}
+                        className={`h-12 w-12 object-cover rounded-xl border-2 cursor-pointer ${
+                          activeIndex === i
+                            ? "border-[#1400c6]"
+                            : "border-gray-300 opacity-60"
+                        }`}
+                        onClick={() => setActiveIndex(i)}
+                      />
+                    );
+                  })}
+                </div>
+              )}
             >
-              <ProjectRow projects={row} />
-              <hr className="w-full h-px bg-[#e0e0e0] border-0 my-8" />
-            </motion.div>
-          ))}
+              {projectsData.map((proj) => (
+                <img
+                  key={proj.id}
+                  src={proj.thumbnail}
+                  alt={proj.title}
+                  // Forzando 900x700
+                  className="
+                    w-[900px] h-[700px]
+                    object-cover
+                    mx-auto
+                    rounded-xl
+                    cursor-pointer
+                  "
+                  onClick={() => handleOpen(proj)}
+                />
+              ))}
+            </Carousel>
+          </motion.div>
+
+          {/* Texto adicional */}
+          <motion.div
+            variants={itemVariants}
+            data-parallax-work
+            className="mt-8 text-lg text-[#212121]"
+          >
+            <p>
+              Desde nuestros inicios, hemos desarrollado más de un centenar de
+              proyectos, cubriendo ferias, eventos culturales, y experiencias
+              gastronómicas de renombre internacional. Nuestro compromiso es
+              brindar un producto de calidad que supere tus expectativas.
+            </p>
+          </motion.div>
         </div>
       </motion.section>
+
+      {/* Barra de Progreso */}
       <div
         className="
-            progress-bar-work
-            fixed bottom-0 left-0
-            w-full h-[3px]
-            bg-[#1400c6]
-            transform scale-x-0 origin-left
-          "
+          progress-bar-work
+          fixed bottom-0 left-0
+          w-full h-[3px]
+          bg-[#1400c6]
+          transform scale-x-0 origin-left
+        "
       />
+
+      {/* Modal (Tamaño MD) */}
+      <Dialog
+        open={open}
+        handler={handleOpen}
+        size="md" // ← Ajustamos a "md"
+      >
+        <DialogHeader>
+          {selectedProject && (
+            <BoxReveal boxColor="#1400c6" duration={0.6}>
+              <Typography variant="h5" color="blue-gray">
+                {selectedProject.title}
+              </Typography>
+            </BoxReveal>
+          )}
+        </DialogHeader>
+        <DialogBody divider>
+          {selectedProject && (
+            <div className="flex flex-col items-center">
+              <img
+                alt={selectedProject.title}
+                className="w-full max-w-[400px] h-[250px] object-cover rounded-md"
+                src={selectedProject.thumbnail}
+              />
+              <BoxReveal boxColor="#1400c6" duration={0.5}>
+                <p className="text-base text-gray-700 mt-6 text-left">
+                  {selectedProject.description}
+                </p>
+              </BoxReveal>
+            </div>
+          )}
+        </DialogBody>
+        <DialogFooter>
+          <button
+            onClick={handleOpen}
+            className="px-4 py-2 bg-gray-200 rounded-lg"
+          >
+            Cerrar
+          </button>
+        </DialogFooter>
+      </Dialog>
+
       <Footer />
     </div>
   );

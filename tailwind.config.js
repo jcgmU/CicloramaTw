@@ -1,9 +1,14 @@
 import { fontFamily } from "tailwindcss/defaultTheme";
+import withMT from "@material-tailwind/react/utils/withMT";
 
 /** @type {import('tailwindcss').Config} */
-export default {
+export default withMT({
   darkMode: ["class"],
-  content: ["./index.html", "./src/**/*.{js,jsx,ts,tsx}"],
+  content: [
+    "./index.html",
+    "./src/**/*.{js,jsx,ts,tsx}",
+    // Agrega rutas para monorepo si fuera necesario
+  ],
   theme: {
     container: {
       center: true,
@@ -95,4 +100,4 @@ export default {
     },
   },
   plugins: [require("tailwindcss-animate")],
-};
+});
