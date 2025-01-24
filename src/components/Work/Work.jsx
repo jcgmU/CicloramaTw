@@ -85,7 +85,7 @@ const Work = () => {
     {
       id: 1,
       title: "BogotaEats a Cielo Abierto",
-      thumbnail: "src/assets/images/imgProjects/Bogotaeats.png",
+      thumbnail: "/assets/images/imgProjects/Bogotaeats.png",
       description:
         "El festival gastronómico de la ciudad, en su cuarta edición, reúne a los mejores exponentes de la escena restaurantera de la capital.",
       details:
@@ -94,7 +94,7 @@ const Work = () => {
     {
       id: 2,
       title: "Coffe Fest",
-      thumbnail: "src/assets/images/imgProjects/CoffeeFest.webp",
+      thumbnail: "/assets/images/imgProjects/CoffeeFest.webp",
       description:
         "festival busca conectar a caficultores con apasionados por el mundo del café. La cuarta edición del festival más importante de la bebida tradici...",
       details:
@@ -103,7 +103,7 @@ const Work = () => {
     {
       id: 3,
       title: "El Papa de los Asados",
-      thumbnail: "src/assets/images/imgProjects/papaDeLosAsados.png",
+      thumbnail: "/assets/images/imgProjects/papaDeLosAsados.png",
       description: "Lorem ipsum...",
       details:
         "Lorem ipsum dolor sit amet consectetur adipisicing elit. Nobis rerum culpa ullam praesentium",
@@ -111,7 +111,7 @@ const Work = () => {
     {
       id: 4,
       title: "Cafés de Colombia Expo",
-      thumbnail: "src/assets/images/imgProjects/CafesColombiaExpo.jpg",
+      thumbnail: "/assets/images/imgProjects/CafesColombiaExpo.jpg",
       description:
         "Cafés de Colombia Expo es la feria de cafés especiales más importante...",
       details:
@@ -120,7 +120,7 @@ const Work = () => {
     {
       id: 5,
       title: "Expo 2 Ruedas",
-      thumbnail: "src/assets/images/imgProjects/Expo2Ruedas.jpg",
+      thumbnail: "/assets/images/imgProjects/Expo2Ruedas.jpg",
       description:
         "Expo 2 Ruedas llega a la capital del país para dinamizar la industria de las motocicletas y la...",
       details:
@@ -129,7 +129,7 @@ const Work = () => {
     {
       id: 6,
       title: "FILBo",
-      thumbnail: "src/assets/images/imgProjects/Filbo.jpg",
+      thumbnail: "/assets/images/imgProjects/Filbo.jpg",
       description:
         "La Feria Internacional del Libro de Bogotá es el escenario natural para que los actores",
       details:
@@ -138,7 +138,7 @@ const Work = () => {
     {
       id: 7,
       title: "Salon Internacional Del Automovil",
-      thumbnail: "src/assets/images/imgProjects/SalonAutomovil.jpg",
+      thumbnail: "/assets/images/imgProjects/SalonAutomovil.jpg",
       description:
         "La feria es el espacio ideal para el sector automotor de Colombia, donde asisten interesados en la adquisición de autos, motos, SUV vehículos utilitarios y de carga ligera, entre otros.",
       details:
@@ -209,18 +209,16 @@ const Work = () => {
             </motion.div>
           ))}
         </div>
-
-        <div
-          className="
+      </motion.section>
+      <div
+        className="
             progress-bar-work
             fixed bottom-0 left-0
             w-full h-[3px]
             bg-[#1400c6]
             transform scale-x-0 origin-left
           "
-        />
-      </motion.section>
-
+      />
       <Footer />
     </div>
   );

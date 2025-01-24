@@ -1,17 +1,18 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import Logo from "../../assets/images/logo.svg";
+import Logo from "/assets/images/logo.svg";
 import { cn } from "@/lib/utils";
 import Marquee from "@/components/ui/marquee";
 import WordRotate from "@/components/ui/word-rotate";
 import TextReveal from "@/components/ui/text-reveal";
 import Footer from "../Footer/Footer";
+import * as motion from "motion/react-client";
 
 const logos = [
-  { src: "src/assets/images/Mazda.svg", alt: "Mazda" },
-  { src: "src/assets/images/WarnerBros.svg", alt: "Warner Bros" },
-  { src: "src/assets/images/Ford.svg", alt: "Ford" },
-  { src: "src/assets/images/Max.svg", alt: "Max" },
+  { src: "/assets/images/Mazda.svg", alt: "Mazda" },
+  { src: "/assets/images/WarnerBros.svg", alt: "Warner Bros" },
+  { src: "/assets/images/Ford.svg", alt: "Ford" },
+  { src: "/assets/images/Max.svg", alt: "Max" },
 ];
 
 const LogoCard = ({ src, alt }) => {
@@ -31,15 +32,6 @@ const ButtonLight = ({ children, className = "" }) => (
   </button>
 );
 
-const ButtonDark = ({ children, className = "" }) => (
-  <button
-    className={`px-6 py-3 rounded-2xl bg-dark text-light font-extrabold text-[17px] relative overflow-hidden transition-all duration-250 shadow-lg hover:text-dark group ${className}`}
-  >
-    {children}
-    <span className="absolute inset-0 w-0 bg-light rounded-2xl transition-all duration-250 group-hover:w-full -z-10" />
-  </button>
-);
-
 const ContactInfoButton = ({ children }) => (
   <button className="text-[#e1e1e1] text-lg font-extrabold uppercase relative overflow-hidden transition-all duration-400 hover:text-white group">
     {children}
@@ -53,14 +45,23 @@ const Home = () => {
       {/* Sección 1: Logo */}
       <section className="h-screen grid place-items-center">
         <div className="max-w-[1500px] mx-auto">
-          <img src={Logo} alt="Ciclorama Logo" className="w-[300px]" />
+          <motion.div
+            initial={{ opacity: 0, scale: 0 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{
+              duration: 0.4,
+              scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
+            }}
+          >
+            <img src={Logo} alt="Ciclorama Logo" className="w-[300px]" />
+          </motion.div>
         </div>
       </section>
 
       {/* Sección 2: Información */}
       <section className="min-h-screen bg-light text-dark flex items-center py-12">
         <div className="max-w-[1500px] mx-auto px-12 grid grid-cols-1 md:grid-cols-[3fr,1fr] gap-8 items-center w-full">
-          {/* Div que contiene el h1 y el p */}
+          {/* Div que contiene el h1*/}
           <div className="md:col-span-1 w-full">
             <TextReveal
               text="Nos dedicamos a hacer tus proyectos realidad"
@@ -70,62 +71,70 @@ const Home = () => {
         </div>
       </section>
 
-      {/* Sección 3: Proyectos */}
+      {/* Sección 3: Proyectos (Marquee Repetidos, Título y Detalles Abajo) */}
       <section className="min-h-screen flex items-center bg-[#212121] text-[#e8e8e8] py-12">
-        <div className="max-w-[1500px] mx-auto px-12 grid grid-cols-1 gap-8 w-full">
-          <h2 className="text-7xl my-8 text-left">Últimos Proyectos</h2>
+        <div className="max-w-[1500px] mx-auto px-12 w-full">
+          <h2 className="text-7xl mb-8 text-left">Últimos Proyectos</h2>
 
-          {[
-            {
-              name: "Bogotá Eats",
-              image: "src/assets/images/imgProjects/Bogotaeats.png",
-              details: ["Experiencial", "Directo", "Diverso"],
-            },
-            {
-              name: "Coffee Fest",
-              image: "src/assets/images/imgProjects/CoffeeFest.webp",
-              details: ["Tradicional", "Sencillo", "Cultural"],
-            },
-            {
-              name: "Papá de los Asados",
-              image: "src/assets/images/imgProjects/papaDeLosAsados.png",
-              details: ["Minimalista", "Rústico", "Auténtico"],
-            },
-          ].map((project, index, arr) => (
-            <div key={project.name} className="w-full">
-              {/* Título */}
-              <div className="text-5xl text-left mb-6 pl-20">
-                {project.name}
-              </div>
-
-              {/* Contenedor Flex para Imagen y Detalles */}
-              <div className="flex flex-wrap items-center gap-8 pl-20">
-                {/* Imagen a la Izquierda */}
+          <Marquee pauseOnHover repeat={2} className="[--duration:18s]">
+            {[
+              {
+                name: "Bogotá Eats",
+                image: "/assets/images/imgProjects/Bogotaeats.png",
+                details: ["Experiencial", "Directo", "Diverso"],
+              },
+              {
+                name: "Coffee Fest",
+                image: "/assets/images/imgProjects/CoffeeFest.webp",
+                details: ["Tradicional", "Sencillo", "Cultural"],
+              },
+              {
+                name: "Papá de los Asados",
+                image: "/assets/images/imgProjects/papaDeLosAsados.png",
+                details: ["Minimalista", "Rústico", "Auténtico"],
+              },
+            ].map((project) => (
+              <div
+                key={project.name}
+                className="flex flex-col items-center justify-center min-w-[300px] p-4 gap-4 mx-6"
+              >
+                {/* Imagen */}
                 <img
                   src={project.image}
                   alt={project.name}
-                  className="w-[400px] h-[400px] object-cover rounded-lg object-center"
+                  className="w-[300px] h-[300px] object-cover rounded-lg"
                 />
 
-                {/* Rotación de Detalles a la Derecha */}
-                <div className="flex-1 pr-5">
-                  <WordRotate
-                    className="text-right text-8xl  gap-2 whitespace-nowrap pr-40"
-                    words={project.details}
-                  />
-                </div>
+                {/* Título y detalles DEBAJO de la imagen */}
+                <h3 className="text-4xl font-bold text-center">
+                  {project.name}
+                </h3>
+                <WordRotate
+                  className="text-2xl text-center gap-2 whitespace-nowrap"
+                  words={project.details}
+                />
               </div>
+            ))}
+          </Marquee>
 
-              {/* Separador (hr) para los primeros dos proyectos */}
-              {index < arr.length - 1 && (
-                <hr className="w-full h-px bg-[#e0e0e0] border-0 my-8 mb-5" />
-              )}
-            </div>
-          ))}
-          <hr className="w-full h-px bg-[#e0e0e0] border-0 my-8 mb-5" />
-          <div className="flex justify-center ml-20">
-            <Link to="/work" className="my-8 mb-5 ">
-              <ButtonLight>Ver más proyectos</ButtonLight>
+          <div className="mt-12 text-center">
+            <Link to="/work">
+              <button
+                className="
+            px-6 py-3 rounded-2xl bg-light 
+            text-stone-500 font-extrabold text-[17px] 
+            relative overflow-hidden transition-all 
+            duration-250 shadow-lg hover:text-dark group
+          "
+              >
+                Ver más proyectos
+                <span
+                  className="
+              absolute inset-0 w-0 bg-dark rounded-2xl 
+              transition-all duration-250 group-hover:w-full -z-10
+            "
+                />
+              </button>
             </Link>
           </div>
         </div>
@@ -173,9 +182,13 @@ const Home = () => {
 
           {/* Botón de contacto */}
           <div className="col-start-5 row-start-3 flex justify-end items-start">
-            <Link to="/contact">
-              <ButtonLight>Contáctanos</ButtonLight>
-            </Link>
+            <button
+              className="bg-[#e8e8e8] text-[#212121] 
+                               font-bold py-3 px-6 rounded-lg 
+                               transition-all hover:bg-[#1400c6] hover:text-[#e8e8e8]"
+            >
+              ¡Hablemos!
+            </button>
           </div>
         </div>
       </section>

@@ -80,6 +80,7 @@ const About = () => {
 
   return (
     <div>
+      {/* Sección 1: Introducción */}
       <motion.section
         className="
           min-h-screen py-[150px] px-4 md:px-12 
@@ -100,9 +101,9 @@ const About = () => {
           >
             <h1 className="block text-4xl md:text-6xl font-extrabold leading-tight">
               Hola, somos{" "}
-              <spam className="text-4xl md:text-6xl font-extrabold leading-tight text-[#1400c6]">
+              <span className="text-4xl md:text-6xl font-extrabold leading-tight text-[#1400c6]">
                 Ciclorama
-              </spam>
+              </span>
             </h1>
 
             <p className="text-lg md:text-4xl text-gray-700 mt-4 max-w-screen-xl mx-auto">
@@ -112,7 +113,7 @@ const About = () => {
             </p>
           </motion.div>
 
-          {/* SECCIÓN DE EXPERIENCIA */}
+          {/* Sección 2: Experiencia Profesional */}
           <motion.div
             variants={itemVariants}
             data-parallax
@@ -142,7 +143,7 @@ const About = () => {
             </div>
           </motion.div>
 
-          {/* SECCIÓN DE HABILIDADES Y HERRAMIENTAS */}
+          {/* Sección 3: Habilidades y Herramientas */}
           <motion.div
             variants={itemVariants}
             data-parallax
@@ -171,8 +172,12 @@ const About = () => {
             </div>
           </motion.div>
 
-          {/* SECCIÓN DE VALORES PERSONALES */}
-          <motion.div variants={itemVariants} className="flex flex-col gap-12">
+          {/* Sección 4: Valores */}
+          <motion.div
+            variants={itemVariants}
+            data-parallax
+            className="flex flex-col gap-12"
+          >
             <hr className="w-full h-px bg-[#e0e0e0] border-0 my-4" />
             <h2 className="text-3xl font-bold">Nuestros Valores</h2>
             <div className="max-w-2xl mx-auto text-center flex flex-col gap-4">
@@ -180,7 +185,7 @@ const About = () => {
                 <motion.p
                   key={idx}
                   variants={itemVariants}
-                  className="text-base md:text-2xl text-gray-800 leading-relaxed"
+                  className="text-base md:text-lg text-gray-800 leading-relaxed"
                 >
                   {valor}
                 </motion.p>
@@ -188,7 +193,7 @@ const About = () => {
             </div>
           </motion.div>
 
-          {/* SECCIÓN CTA / LLAMADO A LA ACCIÓN */}
+          {/* Sección 5: Llamado a la Acción */}
           <motion.div
             variants={itemVariants}
             className="mt-12 flex flex-col items-center"
@@ -200,15 +205,17 @@ const About = () => {
             <button
               className="bg-[#212121] text-[#e8e8e8] 
                                font-bold py-3 px-6 rounded-lg 
-                               transition-all hover:bg-black"
+                               transition-all hover:bg-[#1400c6]"
             >
               ¡Hablemos!
             </button>
           </motion.div>
         </div>
-        {/* Barra de Progreso (Progress Bar) */}
-        <div
-          className="
+      </motion.section>
+
+      {/* Barra de Progreso (Progress Bar) */}
+      <div
+        className="
             progress-bar 
             fixed bottom-0 left-0 
             w-full h-[6px] 
@@ -217,8 +224,9 @@ const About = () => {
             origin-left
             radius-t-lg
           "
-        />
-      </motion.section>
+      />
+
+      {/* Footer */}
       <Footer />
     </div>
   );
