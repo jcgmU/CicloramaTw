@@ -2,7 +2,10 @@ import React, { useEffect } from "react";
 import { motion } from "framer-motion";
 import { animate, scroll } from "motion"; // Motion One
 import Footer from "../Footer/Footer"; // Ajusta la ruta según tu proyecto
-
+import { VelocityScroll } from "@/components/ui/scroll-based-velocity";
+import ButtonDark from "../Buttons/ButtonDark";
+import ButtonLigth from "../Buttons/ButtonLigth";
+import Logo from "/assets/Ciclorama-2.svg";
 // Datos de ejemplo
 const experienciaData = [
   {
@@ -71,6 +74,7 @@ const About = () => {
   return (
     <div className="w-full relative">
       {/* SECCIÓN 1 */}
+      {/* Sección 1: Logo */}
       <section className="h-screen grid place-items-center">
         <div className="max-w-[1500px] mx-auto">
           <motion.div
@@ -81,9 +85,7 @@ const About = () => {
               scale: { type: "spring", visualDuration: 0.4, bounce: 0.5 },
             }}
           >
-            <h1 className="text-5xl md:text-7xl font-extrabold leading-tight">
-              Sobre <span className="text-[#1400c6]">Ciclorama</span>
-            </h1>
+            <img src={Logo} alt="Ciclorama Logo" className="w-[1000px]" />
           </motion.div>
         </div>
       </section>
@@ -110,13 +112,7 @@ const About = () => {
         </div>
       </motion.section>
 
-      {/* SECCIÓN 3: (Experiencia) */}
-      {/*
-        AQUÍ ESTÁ EL CAMBIO PRINCIPAL:
-        1) Quitamos min-h-screen
-        2) Reducimos py-12 a py-8 (o el valor que prefieras)
-        3) Cambiamos gap-12 a gap-6 en el div interno
-      */}
+      {/* Sección 3 con VelocityScroll (Opción 2) */}
       <motion.section
         className="bg-[#212121] text-[#e8e8e8] py-8 px-4 md:px-12"
         initial="hidden"
@@ -126,88 +122,24 @@ const About = () => {
       >
         <div className="max-w-[1500px] w-full mx-auto flex flex-col gap-6">
           <motion.div variants={itemVariants} className="text-left">
-            <hr className="w-full h-px bg-[#e0e0e0] border-0 my-4" />
-            <h2 className="text-4xl font-bold mb-6">Experiencia Profesional</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              {experienciaData.map((exp) => (
-                <motion.div
-                  key={exp.id}
-                  variants={itemVariants}
-                  className="bg-[#2c2c2c] p-6 rounded-lg shadow-md hover:shadow-lg transition-shadow"
-                >
-                  <h3 className="text-xl font-semibold mb-1 text-[#e8e8e8]">
-                    {exp.puesto}
-                  </h3>
-                  <p className="text-sm text-gray-400 italic">
-                    {exp.empresa} | {exp.periodo}
-                  </p>
-                  <p className="mt-2 text-sm leading-relaxed text-gray-300">
-                    {exp.descripcion}
-                  </p>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-        </div>
-      </motion.section>
-
-      {/* SECCIÓN 4:(Habilidades y Valores) */}
-      <motion.section
-        className="min-h-screen bg-[#e0e0e0] text-[#212121] py-12 px-4 md:px-12"
-        initial="hidden"
-        whileInView="visible"
-        viewport={{ once: true }}
-        variants={containerVariants}
-      >
-        <div className="max-w-[1500px] mx-auto w-full flex flex-col gap-12">
-          {/* Habilidades */}
-          <motion.div variants={itemVariants} className="flex flex-col">
-            <hr className="w-full h-px bg-[#cccccc] border-0 my-4" />
-            <h2 className="text-3xl font-bold mb-6">
-              Habilidades & Herramientas
-            </h2>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8">
-              {skillsData.map((skillBlock, idx) => (
-                <motion.div
-                  key={idx}
-                  variants={itemVariants}
-                  className="bg-white p-6 rounded-lg shadow-md hover:shadow-xl"
-                >
-                  <h3 className="text-lg font-semibold mb-2">
-                    {skillBlock.categoria}
-                  </h3>
-                  <ul className="list-disc list-inside text-sm text-gray-700">
-                    {skillBlock.items.map((itemSkill, i) => (
-                      <li key={`${itemSkill}-${i}`}>{itemSkill}</li>
-                    ))}
-                  </ul>
-                </motion.div>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Valores */}
-          <motion.div variants={itemVariants} className="flex flex-col">
-            <hr className="w-full h-px bg-[#cccccc] border-0 my-4" />
-            <h2 className="text-3xl font-bold mb-6">Nuestros Valores</h2>
-            <div className="max-w-2xl mx-auto text-center flex flex-col gap-4">
-              {valoresData.map((valor, idx) => (
-                <motion.p
-                  key={idx}
-                  variants={itemVariants}
-                  className="text-base md:text-lg text-gray-800 leading-relaxed"
-                >
-                  {valor}
-                </motion.p>
-              ))}
-            </div>
+            {/* Párrafo único envuelto en VelocityScroll */}
+            <VelocityScroll
+              velocity={0.15}
+              className="flex flex-col gap-4 my-44"
+            >
+              <p>
+                <span className="font-semibold text-4xl">Ciclorama</span> ofrece
+                soluciones integrales en producciones audiovisuales, colaborando
+                con clientes para proyectos innovadores y memorables.
+              </p>
+            </VelocityScroll>
           </motion.div>
         </div>
       </motion.section>
 
       {/* SECCIÓN 5: (CTA final) */}
       <motion.section
-        className="min-h-screen grid place-items-center py-12 bg-[#212121]"
+        className="min-h-screen grid place-items-center py-12 bg-[#e8e8e8]"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -215,10 +147,10 @@ const About = () => {
       >
         <div className="max-w-[1500px] mx-auto flex flex-col gap-8 px-8">
           <motion.div variants={itemVariants} className="text-left">
-            <h1 className="text-[50px] md:text-[80px] text-[#e8e8e8] font-bold mb-4">
+            <h1 className="text-[50px] md:text-[80px] text-[#212121] font-bold mb-4">
               ¿Listo para trabajar juntos?
             </h1>
-            <p className="text-lg md:text-2xl text-gray-300 max-w-[800px]">
+            <p className="text-lg md:text-2xl text-black max-w-[800px]">
               Contáctanos y descubre cómo podemos dar vida a tus ideas y
               proyectos audiovisuales.
             </p>
@@ -227,12 +159,7 @@ const About = () => {
             variants={itemVariants}
             className="flex flex-col md:flex-row gap-6"
           >
-            <button className="bg-[#e8e8e8] text-[#212121] font-bold py-3 px-6 rounded-lg transition-all hover:bg-[#1400c6] hover:text-[#e8e8e8]">
-              ¡Hablemos!
-            </button>
-            <button className="bg-transparent border border-[#e8e8e8] text-[#e8e8e8] font-bold py-3 px-6 rounded-lg transition-all hover:bg-[#1400c6] hover:border-[#1400c6] hover:text-white">
-              Escríbenos
-            </button>
+            <ButtonLigth>¡Hablemos!</ButtonLigth>
           </motion.div>
         </div>
       </motion.section>

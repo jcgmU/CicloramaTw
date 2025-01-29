@@ -7,6 +7,8 @@ import WordRotate from "@/components/ui/word-rotate";
 import TextReveal from "@/components/ui/text-reveal";
 import Footer from "../Footer/Footer";
 import * as motion from "motion/react-client";
+import ButtonDark from "../Buttons/ButtonDark";
+import ContactInfoButton from "../Buttons/ContactInfoButton";
 
 const logos = [
   { src: "/assets/images/Mazda.svg", alt: "Mazda" },
@@ -22,22 +24,6 @@ const LogoCard = ({ src, alt }) => {
     </div>
   );
 };
-
-const ButtonLight = ({ children, className = "" }) => (
-  <button
-    className={`px-6 py-3 rounded-2xl bg-light text-stone-500 font-extrabold text-[17px] relative overflow-hidden transition-all duration-250 shadow-lg hover:text-dark group ${className}`}
-  >
-    {children}
-    <span className="absolute inset-0 w-0 bg-dark rounded-2xl transition-all duration-250 group-hover:w-full -z-10" />
-  </button>
-);
-
-const ContactInfoButton = ({ children }) => (
-  <button className="text-[#e1e1e1] text-lg font-extrabold uppercase relative overflow-hidden transition-all duration-400 hover:text-white group">
-    {children}
-    <span className="absolute bottom-0 left-1/2 w-0 h-0.5 bg-white transition-all duration-400 group-hover:w-full group-hover:left-0" />
-  </button>
-);
 
 const Home = () => {
   return (
@@ -119,22 +105,7 @@ const Home = () => {
 
           <div className="mt-12 text-center">
             <Link to="/work">
-              <button
-                className="
-            px-6 py-3 rounded-2xl bg-light 
-            text-stone-500 font-extrabold text-[17px] 
-            relative overflow-hidden transition-all 
-            duration-250 shadow-lg hover:text-dark group
-          "
-              >
-                Ver más proyectos
-                <span
-                  className="
-              absolute inset-0 w-0 bg-dark rounded-2xl 
-              transition-all duration-250 group-hover:w-full -z-10
-            "
-                />
-              </button>
+              <ButtonDark>Ver más proyectos</ButtonDark>
             </Link>
           </div>
         </div>
@@ -182,13 +153,7 @@ const Home = () => {
 
           {/* Botón de contacto */}
           <div className="col-start-5 row-start-3 flex justify-end items-start">
-            <button
-              className="bg-[#e8e8e8] text-[#212121] 
-                               font-bold py-3 px-6 rounded-lg 
-                               transition-all hover:bg-[#1400c6] hover:text-[#e8e8e8]"
-            >
-              ¡Hablemos!
-            </button>
+            <ButtonDark>¡Hablemos!</ButtonDark>
           </div>
         </div>
       </section>

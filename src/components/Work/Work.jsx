@@ -166,13 +166,29 @@ const Work = () => {
         viewport={{ once: true }}
         variants={containerVariants}
       >
-        <div className="max-w-[1500px] w-full mx-auto">
+        <div className="max-w-[900px] w-full mx-auto">
           {/* Carrusel con thumbnails en la navegación */}
           <motion.div variants={itemVariants} data-parallax-work>
             <Carousel
               className="rounded-xl"
+              prevArrow={({ handlePrev }) => (
+                <button
+                  onClick={handlePrev}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-black/30 text-white p-2 rounded-full"
+                >
+                  ←
+                </button>
+              )}
+              nextArrow={({ handleNext }) => (
+                <button
+                  onClick={handleNext}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-black/30 text-white p-2 rounded-full"
+                >
+                  →
+                </button>
+              )}
               navigation={({ setActiveIndex, activeIndex, length }) => (
-                <div className="absolute bottom-0 left-2/4 z-50 flex -translate-x-2/4 gap-2 pb-8">
+                <div className="absolute bottom-0 left-1/2 z-50 flex -translate-x-1/2 gap-2 pb-8">
                   {new Array(length).fill("").map((_, i) => {
                     // Thumbnail = la imagen del proyecto
                     // en la posición i (si existe)
@@ -214,20 +230,6 @@ const Work = () => {
                 />
               ))}
             </Carousel>
-          </motion.div>
-
-          {/* Texto adicional */}
-          <motion.div
-            variants={itemVariants}
-            data-parallax-work
-            className="mt-8 text-lg text-[#212121]"
-          >
-            <p>
-              Desde nuestros inicios, hemos desarrollado más de un centenar de
-              proyectos, cubriendo ferias, eventos culturales, y experiencias
-              gastronómicas de renombre internacional. Nuestro compromiso es
-              brindar un producto de calidad que supere tus expectativas.
-            </p>
           </motion.div>
         </div>
       </motion.section>
