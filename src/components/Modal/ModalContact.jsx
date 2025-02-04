@@ -278,8 +278,8 @@ function ModalContact({ open, onClose }) {
                 ¡Gracias por contactarnos!
               </h1>
               <p className="text-lg text-gray-700">
-                Nos contactaremos lo más pronto posible y agradecemos su
-                confianza.
+                Uno de nuestros colaboradores se pondrá en contacto contigo a la
+                brevedad.
               </p>
             </motion.div>
           )}
