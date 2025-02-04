@@ -238,7 +238,7 @@ function ModalContact({ open, onClose }) {
                   name="mensaje"
                   required
                   rows="4"
-                  className="peer w-full border-b-2 border-gray-300 bg-transparent py-2 text-xl focus:outline-none resize-none"
+                  className="peer w-full border-b-2 border-transparent bg-transparent py-2 text-xl focus:outline-none resize-none"
                   placeholder=""
                   value={formData.mensaje}
                   onChange={handleChange}
@@ -272,7 +272,7 @@ function ModalContact({ open, onClose }) {
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
               exit={{ opacity: 0, y: 20 }}
-              className="max-w-md mx-auto p-1 mt-4 text-center"
+              className="max-w-md mx-auto p-1 mt-1 text-center"
             >
               <h1 className="text-4xl text-gray-700 mb-4">
                 ¡Gracias por contactarnos!
