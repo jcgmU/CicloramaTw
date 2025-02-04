@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { motion } from "framer-motion";
 import { animate, scroll } from "motion"; // Motion One
 import Footer from "../Footer/Footer"; // Ajusta la ruta según tu proyecto
@@ -6,6 +6,8 @@ import { VelocityScroll } from "@/components/ui/scroll-based-velocity";
 import ButtonDark from "../Buttons/ButtonDark";
 import ButtonLigth from "../Buttons/ButtonLigth";
 import Logo from "/assets/Ciclorama-2.svg";
+import ModalContact from "../Modal/ModalContact"; // Importa el modal
+
 // Datos de ejemplo
 const experienciaData = [
   {
@@ -64,6 +66,8 @@ const itemVariants = {
 };
 
 const About = () => {
+  const [modalOpen, setModalOpen] = useState(false);
+
   useEffect(() => {
     // Barra de progreso (la "progress-bar" en About)
     scroll(
@@ -159,7 +163,10 @@ const About = () => {
             variants={itemVariants}
             className="flex flex-col md:flex-row gap-6"
           >
-            <ButtonLigth>¡Hablemos!</ButtonLigth>
+            {/* Botón que despliega el modal */}
+            <ButtonLigth onClick={() => setModalOpen(true)}>
+              ¡Hablemos!
+            </ButtonLigth>
           </motion.div>
         </div>
       </motion.section>
@@ -176,6 +183,9 @@ const About = () => {
       />
 
       <Footer />
+
+      {/* Modal de contacto */}
+      <ModalContact open={modalOpen} onClose={() => setModalOpen(false)} />
     </div>
   );
 };

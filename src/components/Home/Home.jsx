@@ -9,6 +9,7 @@ import Footer from "../Footer/Footer";
 import * as motion from "motion/react-client";
 import ButtonDark from "../Buttons/ButtonDark";
 import ContactInfoButton from "../Buttons/ContactInfoButton";
+import ModalContact from "../Modal/ModalContact";
 
 const logos = [
   { src: "/assets/images/Mazda.svg", alt: "Mazda" },
@@ -26,6 +27,11 @@ const LogoCard = ({ src, alt }) => {
 };
 
 const Home = () => {
+  const [open, setOpen] = React.useState(false);
+  const [openModal, setOpenModal] = React.useState(false);
+  const handleOpen = () => setOpen(!open);
+  const handleOpenModal = () => setOpenModal(!openModal);
+
   return (
     <div className="w-full relative">
       {/* Sección 1: Logo */}
@@ -153,9 +159,11 @@ const Home = () => {
 
           {/* Botón de contacto */}
           <div className="col-start-5 row-start-3 flex justify-end items-start">
-            <ButtonDark>¡Hablemos!</ButtonDark>
+            <ButtonDark onClick={handleOpenModal}>¡Hablemos!</ButtonDark>
           </div>
         </div>
+        {/* Modal con el formulario */}
+        <ModalContact open={openModal} onClose={handleOpenModal} />
       </section>
 
       <Footer />

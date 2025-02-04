@@ -13,7 +13,7 @@ import {
 } from "@material-tailwind/react";
 import BoxReveal from "@/components/ui/box-reveal";
 import Footer from "../Footer/Footer";
-
+import ButtonLigth from "../Buttons/ButtonLigth";
 // Variants para Framer Motion
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -277,12 +277,7 @@ const Work = () => {
           )}
         </DialogBody>
         <DialogFooter>
-          <button
-            onClick={handleOpen}
-            className="px-4 py-2 bg-gray-200 rounded-lg"
-          >
-            Cerrar
-          </button>
+          <ButtonLigth onClick={handleOpen}>Cerrar</ButtonLigth>
         </DialogFooter>
       </Dialog>
 
