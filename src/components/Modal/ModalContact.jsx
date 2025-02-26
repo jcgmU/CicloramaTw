@@ -1,14 +1,10 @@
 import React, { useState, useEffect } from "react";
-import {
-  Dialog,
-  DialogHeader,
-  DialogBody,
-  IconButton,
-} from "@material-tailwind/react";
-import { AnimatePresence, motion } from "motion/react";
+import axios from "axios";
+import { toast } from "react-toastify";
+import { cn } from "../../lib/utils";
 
-// Reemplaza el formulario anterior con el nuevo diseño,
-// sin perder las validaciones y protecciones actuales.
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
 function ModalContact({ open, onClose }) {
   const initialFormState = {
     nombre: "",
@@ -26,266 +22,247 @@ function ModalContact({ open, onClose }) {
 
   const [formData, setFormData] = useState(initialFormState);
   const [errors, setErrors] = useState(initialErrorsState);
-  // Controla la visibilidad del formulario para la animación
   const [showForm, setShowForm] = useState(true);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
     if (open) {
-      // Al reabrir el modal, resetea estados para mostrar el form inicial
       setShowForm(true);
-      setFormData(initialFormState);
-      setErrors(initialErrorsState);
+    } else {
+      const timer = setTimeout(() => {
+        setShowForm(false);
+      }, 300); // Tiempo para la animación de cierre
+      return () => clearTimeout(timer);
     }
   }, [open]);
 
-  const sanitizeInput = (input) => input.replace(/['";]/g, "").trim();
-  const isEmailValid = (email) => /^\S+@\S+\.\S+$/.test(email);
-  const isPhoneValid = (phone) => /^\d+$/.test(phone);
+  const validateForm = () => {
+    let tempErrors = {};
+    if (!formData.nombre) tempErrors.nombre = "El nombre es obligatorio";
+    if (!formData.correo) {
+      tempErrors.correo = "El correo es obligatorio";
+    } else if (!/\S+@\S+\.\S+/.test(formData.correo)) {
+      tempErrors.correo = "Formato de correo inválido";
+    }
+    if (!formData.telefono) {
+      tempErrors.telefono = "El teléfono es obligatorio";
+    } else if (!/^\d+$/.test(formData.telefono)) {
+      tempErrors.telefono = "El teléfono debe contener solo números";
+    }
+    if (!formData.mensaje)
+      tempErrors.mensaje = "El mensaje no puede estar vacío";
+
+    setErrors(tempErrors);
+    return Object.keys(tempErrors).length === 0;
+  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
-      [name]: sanitizeInput(value),
+      [name]: value,
     });
-    setErrors({
-      ...errors,
-      [name]: "",
-    });
+    // Limpiar error cuando el usuario empieza a escribir
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: "",
+      });
+    }
   };
 
-  const handleFocus = (e) => {
-    const { name } = e.target;
-    setErrors({ ...errors, [name]: "" });
-  };
-
-  const handleBlur = (e) => {
-    const { name, value } = e.target;
-    let errorMessage = "";
-    if (!value.trim()) {
-      errorMessage = "Este campo es obligatorio";
-    } else {
-      if (name === "nombre") {
-        const nameRegex = /^[A-Za-zÀ-ÿ\s]+$/;
-        if (!nameRegex.test(value)) {
-          errorMessage =
-            "El nombre no debe contener números ni caracteres inválidos";
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (validateForm()) {
+      setIsSubmitting(true);
+      try {
+        const response = await axios.post(`${API_URL}/api/contact`, formData, {
+          headers: {
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        });
+        toast.success("¡Mensaje enviado correctamente!");
+        setFormData(initialFormState);
+        onClose(); // Cerrar modal después del éxito
+      } catch (error) {
+        console.error("Error al enviar el formulario:", error);
+        if (error.response?.data?.errors) {
+          const backendErrors = {};
+          error.response.data.errors.forEach((err) => {
+            backendErrors[err.param] = err.msg;
+          });
+          setErrors(backendErrors);
+        } else {
+          toast.error(
+            "Error de conexión. Por favor verifica tu conexión a internet e intenta nuevamente."
+          );
         }
-      }
-      if (name === "correo" && !isEmailValid(value)) {
-        errorMessage = "Ingrese un correo válido";
-      }
-      if (name === "telefono" && !isPhoneValid(value)) {
-        errorMessage = "Ingrese un teléfono válido";
+      } finally {
+        setIsSubmitting(false);
       }
     }
-    setErrors({ ...errors, [name]: errorMessage });
-    if (
-      (name === "correo" || name === "telefono" || name === "nombre") &&
-      errorMessage
-    ) {
-      setFormData({ ...formData, [name]: "" });
-    }
   };
 
-  const isFormValid = () => {
-    return (
-      formData.nombre.trim() &&
-      isEmailValid(formData.correo) &&
-      isPhoneValid(formData.telefono) &&
-      formData.mensaje.trim()
-    );
-  };
-
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    const newErrors = {
-      nombre: !formData.nombre.trim() ? "Este campo es obligatorio" : "",
-      correo: !isEmailValid(formData.correo) ? "Ingrese un correo válido" : "",
-      telefono: !isPhoneValid(formData.telefono)
-        ? "Ingrese un teléfono válido"
-        : "",
-      mensaje: !formData.mensaje.trim() ? "Este campo es obligatorio" : "",
-    };
-
-    setErrors(newErrors);
-    const hasErrors = Object.values(newErrors).some((err) => err !== "");
-    if (hasErrors) return;
-
-    const sanitizedData = {
-      nombre: sanitizeInput(formData.nombre),
-      correo: sanitizeInput(formData.correo),
-      telefono: sanitizeInput(formData.telefono),
-      mensaje: sanitizeInput(formData.mensaje),
-    };
-
-    console.log("Formulario enviado:", sanitizedData);
-    // Oculta el formulario con exit animation
-    setShowForm(false);
-  };
-
-  const renderLabel = (field, defaultText) => (
-    <label
-      htmlFor={field}
-      className={`absolute left-0 top-2 transition-all duration-300 
-      ${errors[field] ? "text-red-500" : "text-gray-400"} 
-      peer-focus:-top-5 peer-focus:text-sm peer-focus:text-gray-700 
-      peer-valid:-top-5 peer-valid:text-sm peer-valid:${
-        errors[field] ? "text-red-500" : "text-gray-700"
-      }`}
-    >
-      {errors[field] ? errors[field] : defaultText}
-    </label>
-  );
+  if (!open && !showForm) return null;
 
   return (
-    <Dialog open={open} handler={onClose} size="sm" className="p-2">
-      <DialogHeader>
-        <IconButton
-          size="sm"
-          variant="text"
-          className="!absolute right-3.5 top-3.5"
+    <div
+      className={`fixed inset-0 z-50 flex items-center justify-center p-4 transition-opacity duration-300 ${
+        open ? "opacity-100" : "opacity-0 pointer-events-none"
+      }`}
+    >
+      <div
+        className="fixed inset-0 bg-black bg-opacity-50"
+        onClick={onClose}
+      ></div>
+      <div
+        className="relative bg-white rounded-lg shadow-xl max-w-md w-full mx-auto p-6 transform transition-all duration-300"
+        style={{
+          transform: open ? "scale(1)" : "scale(0.95)",
+        }}
+      >
+        <button
           onClick={onClose}
+          className="absolute top-4 right-4 text-gray-400 hover:text-gray-600"
         >
-          ✕
-        </IconButton>
-      </DialogHeader>
-      <DialogBody className="overflow-y-auto">
-        <AnimatePresence initial={false}>
-          {showForm ? (
-            <motion.form
-              key="contactForm"
-              onSubmit={handleSubmit}
-              initial={{ opacity: 0, scale: 0 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0 }}
-              className="max-w-md mx-auto p-1 mt-4"
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            className="h-6 w-6"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M6 18L18 6M6 6l12 12"
+            />
+          </svg>
+        </button>
+
+        <div className="text-center mb-6">
+          <h3 className="text-xl font-semibold text-gray-800">Contáctanos</h3>
+          <p className="text-sm text-gray-500 mt-1">
+            Complete el formulario y nos pondremos en contacto contigo pronto.
+          </p>
+        </div>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="modal-nombre"
             >
-              <h1 className="text-4xl text-center text-gray-700 mb-4">
-                ¡Hablemos!
-              </h1>
-              {/* Nombre */}
-              <div className="relative my-6">
-                <input
-                  type="text"
-                  id="nombre"
-                  name="nombre"
-                  required
-                  className="peer w-full border-b-2 border-gray-300 bg-transparent py-2 text-xl focus:outline-none"
-                  placeholder=""
-                  value={formData.nombre}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                />
-                {renderLabel("nombre", "Nombre")}
-                <span
-                  className="absolute left-0 bottom-0 h-0.5 w-full origin-left scale-x-0 bg-gray-700
-                  transition-transform duration-300
-                  peer-focus:scale-x-100 peer-valid:scale-x-100"
-                ></span>
-              </div>
+              Nombre completo
+            </label>
+            <input
+              className={cn(
+                "w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2",
+                errors.nombre
+                  ? "border-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              )}
+              type="text"
+              name="nombre"
+              id="modal-nombre"
+              value={formData.nombre}
+              onChange={handleChange}
+              placeholder="Ingresa tu nombre"
+            />
+            {errors.nombre && (
+              <p className="text-red-500 text-xs mt-1">{errors.nombre}</p>
+            )}
+          </div>
 
-              {/* Correo */}
-              <div className="relative my-6">
-                <input
-                  type="email"
-                  id="correo"
-                  name="correo"
-                  required
-                  className="peer w-full border-b-2 border-gray-300 bg-transparent py-2 text-xl focus:outline-none"
-                  placeholder=""
-                  value={formData.correo}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                />
-                {renderLabel("correo", "Correo")}
-                <span
-                  className="absolute left-0 bottom-0 h-0.5 w-full origin-left scale-x-0 bg-gray-700
-                  transition-transform duration-300
-                  peer-focus:scale-x-100 peer-valid:scale-x-100"
-                ></span>
-              </div>
-
-              {/* Teléfono */}
-              <div className="relative my-6">
-                <input
-                  type="tel"
-                  id="telefono"
-                  name="telefono"
-                  required
-                  className="peer w-full border-b-2 border-gray-300 bg-transparent py-2 text-xl focus:outline-none"
-                  placeholder=""
-                  value={formData.telefono}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                />
-                {renderLabel("telefono", "Teléfono")}
-                <span
-                  className="absolute left-0 bottom-0 h-0.5 w-full origin-left scale-x-0 bg-gray-700
-                  transition-transform duration-300
-                  peer-focus:scale-x-100 peer-valid:scale-x-100"
-                ></span>
-              </div>
-
-              {/* Mensaje */}
-              <div className="relative my-6">
-                <textarea
-                  id="mensaje"
-                  name="mensaje"
-                  required
-                  rows="4"
-                  className="peer w-full border-b-2 border-transparent bg-transparent py-2 text-xl focus:outline-none resize-none"
-                  placeholder=""
-                  value={formData.mensaje}
-                  onChange={handleChange}
-                  onBlur={handleBlur}
-                  onFocus={handleFocus}
-                ></textarea>
-                {renderLabel("mensaje", "Mensaje")}
-                <span
-                  className="absolute left-0 bottom-0 h-0.5 w-full origin-left scale-x-0 bg-gray-700
-                  transition-transform duration-300
-                  peer-focus:scale-x-100 peer-valid:scale-x-100"
-                ></span>
-              </div>
-
-              {/* Botón de envío */}
-              <button
-                type="submit"
-                disabled={!isFormValid()}
-                className={`mt-4 w-full rounded py-2 text-white transition-colors ${
-                  isFormValid()
-                    ? "bg-blue-700 hover:bg-blue-800"
-                    : "bg-gray-500 cursor-not-allowed"
-                }`}
-              >
-                Enviar
-              </button>
-            </motion.form>
-          ) : (
-            <motion.div
-              key="confirmationMessage"
-              initial={{ opacity: 0, y: -20 }}
-              animate={{ opacity: 1, y: 0, transition: { delay: 0.5 } }}
-              exit={{ opacity: 0, y: 20 }}
-              className="max-w-md mx-auto p-1 mt-1 text-center"
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="modal-correo"
             >
-              <h1 className="text-4xl text-gray-700 mb-4">
-                ¡Gracias por contactarnos!
-              </h1>
-              <p className="text-lg text-gray-700">
-                Uno de nuestros colaboradores se pondrá en contacto contigo a la
-                brevedad.
-              </p>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </DialogBody>
-    </Dialog>
+              Correo electrónico
+            </label>
+            <input
+              className={cn(
+                "w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2",
+                errors.correo
+                  ? "border-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              )}
+              type="email"
+              name="correo"
+              id="modal-correo"
+              value={formData.correo}
+              onChange={handleChange}
+              placeholder="tucorreo@ejemplo.com"
+            />
+            {errors.correo && (
+              <p className="text-red-500 text-xs mt-1">{errors.correo}</p>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="modal-telefono"
+            >
+              Teléfono
+            </label>
+            <input
+              className={cn(
+                "w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2",
+                errors.telefono
+                  ? "border-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              )}
+              type="tel"
+              name="telefono"
+              id="modal-telefono"
+              value={formData.telefono}
+              onChange={handleChange}
+              placeholder="Ingresa tu número telefónico"
+            />
+            {errors.telefono && (
+              <p className="text-red-500 text-xs mt-1">{errors.telefono}</p>
+            )}
+          </div>
+
+          <div className="mb-5">
+            <label
+              className="block text-sm font-medium text-gray-700 mb-1"
+              htmlFor="modal-mensaje"
+            >
+              Mensaje
+            </label>
+            <textarea
+              className={cn(
+                "w-full px-3 py-2 text-sm border rounded-md focus:outline-none focus:ring-2 min-h-[80px]",
+                errors.mensaje
+                  ? "border-red-500"
+                  : "border-gray-300 focus:ring-blue-500"
+              )}
+              name="mensaje"
+              id="modal-mensaje"
+              value={formData.mensaje}
+              onChange={handleChange}
+              placeholder="¿En qué podemos ayudarte?"
+            />
+            {errors.mensaje && (
+              <p className="text-red-500 text-xs mt-1">{errors.mensaje}</p>
+            )}
+          </div>
+
+          <button
+            type="submit"
+            disabled={isSubmitting}
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-2.5 px-4 rounded-md transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50"
+          >
+            {isSubmitting ? "Enviando..." : "Enviar mensaje"}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
 
