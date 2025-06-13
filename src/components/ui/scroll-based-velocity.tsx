@@ -1,15 +1,15 @@
 "use client";
 
+import React, { useState, useRef } from "react";
 import {
   motion,
-  useAnimationFrame,
-  useMotionValue,
   useScroll,
   useSpring,
   useTransform,
+  useMotionValue,
   useVelocity,
-} from "motion/react";
-import React, { useEffect, useRef, useState } from "react";
+  useAnimationFrame,
+} from "framer-motion";
 
 import { cn } from "@/lib/utils";
 
@@ -45,33 +45,32 @@ function ParallaxText({
     clamp: false,
   });
 
-  // Fuerza el valor a 1 para impedir repeticiones
   const [repetitions] = useState(1);
 
-  // Elimina o comenta toda la lógica que calculaba 'containerWidth', 'textWidth', etc.
-
   const x = useTransform(baseX, (v) => `${wrap(-100 / repetitions, 0, v)}%`);
-  const directionFactor = React.useRef<number>(1);
+  const directionFactor = useRef<number>(-1); // Cambiado a -1 para ir de derecha a izquierda
 
   useAnimationFrame((t, delta) => {
-    let moveBy = directionFactor.current * baseVelocity * (delta / 1000);
+    let moveBy = directionFactor.current * Math.abs(baseVelocity) * (delta / 1000); // Usar Math.abs para asegurar movimiento consistente
+
     if (velocityFactor.get() < 0) {
-      directionFactor.current = -1;
+      directionFactor.current = 1; // Invierte la dirección cuando el scroll va hacia arriba
     } else if (velocityFactor.get() > 0) {
-      directionFactor.current = 1;
+      directionFactor.current = -1; // Mantiene la dirección cuando el scroll va hacia abajo
     }
-    moveBy += directionFactor.current * moveBy * velocityFactor.get();
+
+    moveBy += directionFactor.current * moveBy * Math.abs(velocityFactor.get());
+
     baseX.set(baseX.get() + moveBy);
   });
 
   return (
-    <div
-      className="w-full overflow-hidden whitespace-nowrap"
-      {...props}
-    >
-      <motion.div className="inline-block" style={{ x }}>
-        {/* Repite el texto sólo una vez */}
-        <span>{children}</span>
+    <div className="parallax">
+      <motion.div className="scroller" style={{ x }}>
+        <span>{children} </span>
+        <span>{children} </span>
+        <span>{children} </span>
+        <span>{children} </span>
       </motion.div>
     </div>
   );
@@ -79,27 +78,21 @@ function ParallaxText({
 
 export function VelocityScroll({
   defaultVelocity = 5,
-  numRows = 2,
+  numRows = 1,
   children,
   className,
   ...props
 }: VelocityScrollProps) {
   return (
-    <div
-      className={cn(
-        "relative w-full text-4xl font-bold tracking-[-0.02em] md:text-7xl md:leading-[5rem]",
-        className,
-      )}
-      {...props}
-    >
-      {Array.from({ length: numRows }).map((_, i) => (
+    <section className={cn("relative w-full", className)} {...props}>
+      {Array.from({ length: numRows }, (_, i) => (
         <ParallaxText
           key={i}
-          baseVelocity={defaultVelocity * (i % 2 === 0 ? 1 : -1)}
+          baseVelocity={defaultVelocity * (i % 2 === 0 ? -1 : 1)} // Alterna la dirección para múltiples filas
         >
           {children}
         </ParallaxText>
       ))}
-    </div>
+    </section>
   );
 }

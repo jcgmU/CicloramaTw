@@ -62,6 +62,12 @@ export default withMT({
       },
       fontFamily: {
         sans: ["var(--font-sans)", ...fontFamily.sans],
+        // Fuentes personalizadas
+        olivie: ["OlivieSans", "sans-serif"],
+        montreal: ["Neue Montreal", "sans-serif"],
+        "montreal-light": ["Neue Montreal Light", "sans-serif"],
+        "montreal-medium": ["Neue Montreal", "sans-serif"],
+        "montreal-bold": ["Neue Montreal", "sans-serif"],
       },
       keyframes: {
         "accordion-down": {

@@ -92,7 +92,9 @@ export default function MergedContactForm() {
   };
 
   return (
-    <section className="bg-white py-12">
+    <section className="bg-white py-12 mt-20">
+      {" "}
+      {/* Añadido mt-20 */}
       <div className="max-w-6xl mx-auto px-4 sm:px-6">
         <div className="text-center mb-8">
           <h2 className="text-3xl font-bold text-gray-800">Contáctanos</h2>

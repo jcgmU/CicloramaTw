@@ -1,10 +1,9 @@
 // src/components/Work/Work.jsx
 
 import React, { useState, useEffect } from "react";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { animate, scroll } from "motion";
 import {
-  Carousel,
   Dialog,
   DialogHeader,
   DialogBody,
@@ -14,6 +13,20 @@ import {
 import BoxReveal from "@/components/ui/box-reveal";
 import Footer from "../Footer/Footer";
 import ButtonLigth from "../Buttons/ButtonLigth";
+
+// Utilidad para la burbuja de imagen en hover
+const Bubble = ({ img, x, y }) => (
+  <motion.div
+    initial={{ opacity: 0, scale: 0.7 }}
+    animate={{ opacity: 1, scale: 1, x, y }}
+    exit={{ opacity: 0, scale: 0.7 }}
+    transition={{ type: "spring", stiffness: 300, damping: 25 }}
+    className="pointer-events-none fixed z-[10000] top-0 left-0 w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 lg:w-28 lg:h-28 rounded-full overflow-hidden shadow-lg border-2 border-[#2e2e2e] bg-white"
+  >
+    <img src={img} alt="thumb" className="w-full h-full object-cover" />
+  </motion.div>
+);
+
 // Variants para Framer Motion
 const containerVariants = {
   hidden: { opacity: 0, scale: 0.95 },
@@ -110,14 +123,88 @@ const Work = () => {
   const [open, setOpen] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
 
+  // === Estados para el acordeón ===
+  const [openId, setOpenId] = useState(null);
+  // === Estados ===
+  const [bubble, setBubble] = useState(null);
+  const [hoveredProject, setHoveredProject] = useState(null);
+  const hoverTimeoutRef = React.useRef(null);
+
   // Abre/Cierra el modal
   const handleOpen = (project) => {
     if (project) setSelectedProject(project);
     setOpen((prev) => !prev);
   };
 
+  // Maneja expandir/replegar en acordeón
+  const handleToggle = (id) => {
+    setOpenId(openId === id ? null : id);
+  };
+
+  // Función de debounce para evitar parpadeos
+  const useDebounce = (callback, delay) => {
+    const timeoutRef = React.useRef(null);
+
+    return (...args) => {
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      timeoutRef.current = setTimeout(() => {
+        callback(...args);
+      }, delay);
+    };
+  };
+
+  // === Manejadores de eventos ===
+  const handleProjectHoverStart = (project) => (e) => {
+    // Limpia cualquier timeout pendiente
+    if (hoverTimeoutRef.current) {
+      clearTimeout(hoverTimeoutRef.current);
+    }
+
+    // Establece el proyecto y la burbuja inmediatamente
+    setHoveredProject(project);
+    setBubble({
+      img: project.thumbnail,
+      x: e.clientX + 20,
+      y: e.clientY - 40,
+    });
+  };
+
+  const handleProjectHoverEnd = () => {
+    // Usa timeout para evitar parpadeos al pasar entre elementos
+    hoverTimeoutRef.current = setTimeout(() => {
+      setHoveredProject(null);
+      setBubble(null);
+    }, 150); // Tiempo un poco mayor para permitir transiciones suaves
+  };
+
+  // Función para manejar el movimiento del mouse
+  const handleMouseMove = (e) => {
+    if (hoveredProject && bubble) {
+      // Solo actualiza la posición cuando hay un proyecto en hover
+      setBubble({
+        img: hoveredProject.thumbnail,
+        x: e.clientX + 20,
+        y: e.clientY - 40,
+      });
+    }
+  };
+
+  // Limpia el timeout cuando el componente se desmonta
+  useEffect(() => {
+    return () => {
+      if (hoverTimeoutRef.current) {
+        clearTimeout(hoverTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // === Efecto de Parallax + Progreso ===
   useEffect(() => {
+    // Resetear el scroll al inicio de la página
+    window.scrollTo(0, 0);
+
     // Barra de progreso
     scroll(
       animate(".progress-bar-work", { scaleX: [0, 1] }, { ease: "linear" })
@@ -132,10 +219,10 @@ const Work = () => {
   }, []);
 
   return (
-    <div>
+    <div onMouseMove={handleMouseMove}>
       {/* Sección 1: Hero oscuro */}
       <motion.section
-        className="h-screen bg-[#212121] flex flex-col justify-center items-center px-4"
+        className="h-screen flex flex-col justify-center items-center px-4 sm:px-6 lg:px-8"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
@@ -144,92 +231,90 @@ const Work = () => {
         <motion.h1
           variants={itemVariants}
           data-parallax-work
-          className="text-6xl text-[#e8e8e8] font-extrabold mb-4 border-b-[3px] border-[#e0e0e0]"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl xl:text-8xl font-montreal font-bold text-[#212121] mb-3 sm:mb-4 border-b-[2px] sm:border-b-[3px] border-[#212121] text-center"
         >
           Nuestro Trabajo
         </motion.h1>
         <motion.p
           variants={itemVariants}
           data-parallax-work
-          className="text-xl md:text-2xl text-gray-300 max-w-[800px] text-center"
+          className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-montreal font-light text-gray-600 max-w-[300px] sm:max-w-[500px] md:max-w-[700px] lg:max-w-[800px] text-center leading-relaxed"
         >
           Hemos colaborado con diversos festivales y eventos, siempre entregando
           la mejor calidad audiovisual. Explora nuestro portafolio.
         </motion.p>
       </motion.section>
 
-      {/* Sección 2: Carrusel Claro */}
+      {/* === SECCIÓN 2: ACORDEÓN DE PROYECTOS === */}
+
       <motion.section
-        className="min-h-screen py-[100px] px-4 md:px-12 bg-[#e8e8e8]"
+        className="min-h-fit py-6 sm:py-8 lg:py-10 bg-white relative w-full overflow-visible"
         initial="hidden"
         whileInView="visible"
         viewport={{ once: true }}
         variants={containerVariants}
       >
-        <div className="max-w-[900px] w-full mx-auto">
-          {/* Carrusel con thumbnails en la navegación */}
+        <div className="w-full pb-6 sm:pb-8 lg:pb-10">
           <motion.div variants={itemVariants} data-parallax-work>
-            <Carousel
-              className="rounded-xl"
-              prevArrow={({ handlePrev }) => (
-                <button
-                  onClick={handlePrev}
-                  className="absolute left-4 top-1/2 -translate-y-1/2 z-50 bg-black/30 text-white p-2 rounded-full"
+            <div className="w-full space-y-0 px-0">
+              {projectsData.map((project, idx) => (
+                <motion.div
+                  key={project.id}
+                  className={`relative bg-[#23232a] rounded-none shadow-lg cursor-pointer transition-all overflow-hidden w-full`}
+                  whileHover={{ scale: openId === project.id ? 1 : 1.005 }}
+                  onClick={() => handleToggle(project.id)}
+                  onMouseEnter={handleProjectHoverStart(project)}
+                  onMouseLeave={handleProjectHoverEnd}
                 >
-                  ←
-                </button>
-              )}
-              nextArrow={({ handleNext }) => (
-                <button
-                  onClick={handleNext}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 z-50 bg-black/30 text-white p-2 rounded-full"
-                >
-                  →
-                </button>
-              )}
-              navigation={({ setActiveIndex, activeIndex, length }) => (
-                <div className="absolute bottom-0 left-1/2 z-50 flex -translate-x-1/2 gap-2 pb-8">
-                  {new Array(length).fill("").map((_, i) => {
-                    // Thumbnail = la imagen del proyecto
-                    // en la posición i (si existe)
-                    const thumb = projectsData[i]
-                      ? projectsData[i].thumbnail
-                      : "/assets/images/default.jpg";
+                  {/* Barra principal (cerrada) */}
+                  <div className="flex my-4 sm:my-5 lg:my-7 ml-4 sm:ml-12 md:ml-32 lg:ml-64 items-center h-12 sm:h-16 lg:h-20 px-4 sm:px-8 lg:px-12 select-none z-10">
+                    <span className="text-2xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl font-thin text-[#e8e8e8] mr-2 sm:mr-3 lg:mr-4">
+                      {idx + 1}
+                    </span>
+                    <span className="text-lg sm:text-2xl md:text-3xl lg:text-4xl xl:text-5xl 2xl:text-6xl font-thin text-[#e8e8e8] tracking-wide">
+                      {project.title}
+                    </span>
+                  </div>
 
-                    return (
-                      <img
-                        key={`thumb-${i}`}
-                        src={thumb}
-                        alt={`thumb-${i}`}
-                        className={`h-12 w-12 object-cover rounded-xl border-2 cursor-pointer ${
-                          activeIndex === i
-                            ? "border-[#1400c6]"
-                            : "border-gray-300 opacity-60"
-                        }`}
-                        onClick={() => setActiveIndex(i)}
-                      />
-                    );
-                  })}
-                </div>
-              )}
-            >
-              {projectsData.map((proj) => (
-                <img
-                  key={proj.id}
-                  src={proj.thumbnail}
-                  alt={proj.title}
-                  // Forzando 900x700
-                  className="
-                    w-[900px] h-[700px]
-                    object-cover
-                    mx-auto
-                    rounded-xl
-                    cursor-pointer
-                  "
-                  onClick={() => handleOpen(proj)}
-                />
+                  {/* Contenido expandido (simple) */}
+                  <AnimatePresence>
+                    {openId === project.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3, ease: "easeOut" }}
+                        className="bg-[#1c1c24] border-t border-[#e8e8e8] w-full"
+                      >
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 p-4 sm:p-8 lg:p-12 max-w-7xl mx-auto">
+                          {/* Imagen */}
+                          <div className="w-full flex justify-center items-center order-2 lg:order-1">
+                            <img
+                              src={project.thumbnail}
+                              alt={project.title}
+                              className="max-w-full h-auto rounded-lg shadow-lg border-2 border-[#e8e8e8] transition-transform transform hover:scale-105"
+                            />
+                          </div>
+
+                          {/* Información */}
+                          <div className="flex flex-col justify-center order-1 lg:order-2">
+                            <h3 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-montreal font-normal text-[#e8e8e8] mb-3 sm:mb-4">
+                              {project.title}
+                            </h3>
+                            <p className="text-gray-200 text-base sm:text-lg md:text-xl lg:text-2xl xl:text-3xl font-montreal font-light mb-3 sm:mb-4 leading-relaxed">
+                              {project.description}
+                            </p>
+                            <p className="text-gray-400 text-sm sm:text-base md:text-lg lg:text-xl font-montreal font-thin leading-relaxed">
+                              {project.details}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
+                </motion.div>
               ))}
-            </Carousel>
+            </div>
           </motion.div>
         </div>
       </motion.section>
@@ -239,48 +324,58 @@ const Work = () => {
         className="
           progress-bar-work
           fixed bottom-0 left-0
-          w-full h-[3px]
+          w-full h-[3px] sm:h-[4px] lg:h-[6px]
           bg-[#1400c6]
           transform scale-x-0 origin-left
         "
       />
 
-      {/* Modal (Tamaño MD) */}
-      <Dialog
-        open={open}
-        handler={handleOpen}
-        size="md" // ← Ajustamos a "md"
-      >
-        <DialogHeader>
-          {selectedProject && (
+      {/* Burbuja de hover */}
+      <AnimatePresence>
+        {bubble && <Bubble img={bubble.img} x={bubble.x} y={bubble.y} />}
+      </AnimatePresence>
+
+      {/* Modal con validación para evitar error */}
+      {selectedProject && (
+        <Dialog
+          open={open}
+          handler={handleOpen}
+          size="md"
+          className="max-w-[95vw] sm:max-w-[90vw] md:max-w-[80vw] lg:max-w-[70vw]"
+        >
+          <DialogHeader className="px-4 sm:px-6">
             <BoxReveal boxColor="#1400c6" duration={0.6}>
-              <Typography variant="h5" color="blue-gray">
+              <Typography
+                variant="h5"
+                color="blue-gray"
+                className="text-lg sm:text-xl md:text-2xl"
+              >
                 {selectedProject.title}
               </Typography>
             </BoxReveal>
-          )}
-        </DialogHeader>
-        <DialogBody divider>
-          {selectedProject && (
+          </DialogHeader>
+          <DialogBody
+            divider
+            className="px-4 sm:px-6 max-h-[60vh] overflow-y-auto"
+          >
             <div className="flex flex-col items-center">
               <img
                 alt={selectedProject.title}
-                className="w-full max-w-[400px] h-[250px] object-cover rounded-md"
+                className="w-full max-w-[300px] sm:max-w-[400px] h-auto object-cover rounded-md"
                 src={selectedProject.thumbnail}
               />
               <BoxReveal boxColor="#1400c6" duration={0.5}>
-                <p className="text-base text-gray-700 mt-6 text-left">
+                <p className="text-sm sm:text-base text-gray-700 mt-4 sm:mt-6 text-left leading-relaxed">
                   {selectedProject.description}
                 </p>
               </BoxReveal>
             </div>
-          )}
-        </DialogBody>
-        <DialogFooter>
-          <ButtonLigth onClick={handleOpen}>Cerrar</ButtonLigth>
-        </DialogFooter>
-      </Dialog>
-
+          </DialogBody>
+          <DialogFooter className="px-4 sm:px-6">
+            <ButtonLigth onClick={handleOpen}>Cerrar</ButtonLigth>
+          </DialogFooter>
+        </Dialog>
+      )}
       <Footer />
     </div>
   );
