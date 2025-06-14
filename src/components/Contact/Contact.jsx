@@ -3,6 +3,8 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import { cn } from "../../lib/utils";
 
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5001";
+
 export default function MergedContactForm() {
   const initialFormState = {
     nombre: "",
@@ -56,7 +58,7 @@ export default function MergedContactForm() {
       setIsSubmitting(true);
       try {
         const response = await axios.post(
-          "http://localhost:5001/api/contact", // Actualizar puerto a 5001
+          `${API_URL}/api/contact`,
           formData,
           {
             withCredentials: true,
