@@ -65,7 +65,7 @@ const Work = () => {
     },
     {
       id: 2,
-      title: "Coffe Fest",
+      title: "Coffee Fest",
       thumbnail: "/assets/images/imgProjects/CoffeeFest.webp",
       description:
         "Festival busca conectar a caficultores con apasionados por el mundo del café. La cuarta edición del festival más importante de la bebida tradicional.",
